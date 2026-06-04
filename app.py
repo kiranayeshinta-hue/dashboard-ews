@@ -110,11 +110,3 @@ if st.session_state.berjalan and st.session_state.indeks_simulasi < 3:
     time.sleep(4)  
     st.session_state.indeks_simulasi += 1
     st.rerun()
-if latest['EWS'] >= 5:
-        bg_color = "#FF4B4B" 
-        text_color = "white"
-        status_pasien = "CRITICAL / RESTI TINGGI"
-        respon_klinis = "⚠️ AKTIVASI CODE BLUE! Laporkan Dokter DPJP, pindahkan ke ICU/HCU, monitoring kontinu."
-        # TAMBAHKAN BARIS DI BAWAH INI:
-        st.error("🚨 EMERGENCY! Bunyi alarm diaktifkan!")
-        st.audio("https://www.soundjay.com/buttons/sounds/alarm-clock-elapsed-01.mp3", autoplay=True)
