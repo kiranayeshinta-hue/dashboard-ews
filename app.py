@@ -1,12 +1,14 @@
 import streamlit as st
 import pandas as pd
+import plotly.graph_objects as go
 import time
 
 st.set_page_config(page_title="ICU Early Warning Dashboard", layout="wide")
 
 st.title("ICU EARLY WARNING DASHBOARD")
-st.caption("Monitoring Pasien Secara Real-Time")
+st.caption("Monitoring Pasien Secara Real-Time dengan Tren Grafik")
 
+# Data Kronologi Observasi 6 Jam Pasien
 data_skenario = [
     {"jam": "08.00", "hr": 92,  "td": "118/76", "map": 90, "rr": 20, "spo2": 98, "suhu": 37.5, "status": "STABIL", "ews": 2, "warna": "#28A745", "text": "white", "Rekomendasi": "• Monitor tanda vital\n• Observasi berkala setiap shift\n• Pertahankan terapi dokter"},
     {"jam": "10.00", "hr": 108, "td": "102/68", "map": 79, "rr": 24, "spo2": 96, "suhu": 38.2, "status": "WASPADA", "ews": 5, "warna": "#FFAA00", "text": "black", "Rekomendasi": "• Tingkatkan frekuensi observasi (tiap 1-2 jam)\n• Laporkan perkembangan ke Dokter Jaga\n• Monitor perfusi jaringan"},
@@ -25,7 +27,7 @@ with c1:
     if st.button("▶️ Mulai Jalankan Simulasi"):
         st.session_state.berjalan = True
 with c2:
-    if st.button("🔄 Reset ke Jam 08.00 (Awal)"):
+    if st.button("🔄 Reset ke Jam 08.00"):
         st.session_state.indeks_simulasi = 0
         st.session_state.berjalan = False
         st.rerun()
@@ -64,6 +66,21 @@ with kolom_tengah:
     t5.metric("Saturasi Oksigen (SpO2)", f"{p['spo2']} %", "Normal: 95-100")
     t6.metric("Temperature (Suhu)", f"{p['suhu']} °C", "Normal: 36.5-37.5")
     
+    # --- BAGIAN GRAFIK TREN ---
+    st.markdown("---")
+    st.subheader("📈 Grafik Tren Perburukan Tanda Vital")
+    
+    histori = data_skenario[:idx+1]
+    df_histori = pd.DataFrame(histori)
+    
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=df_histori['jam'], y=df_histori['hr'], name='Heart Rate (bpm)', line=dict(color='#FF4B4B', width=3)))
+    fig.add_trace(go.Scatter(x=df_histori['jam'], y=df_histori['map'], name='MAP (mmHg)', line=dict(color='#0083B0', width=3)))
+    fig.add_trace(go.Scatter(x=df_histori['jam'], y=df_histori['spo2'], name='SpO2 (%)', line=dict(color='#28A745', width=3)))
+    
+    fig.update_layout(template="plotly_dark", height=300, margin=dict(l=20, r=20, t=20, b=20))
+    st.plotly_chart(fig, use_container_width=True)
+
     st.markdown("---")
     st.subheader("💡 Instruksi / Rekomendasi Klinik Perawat:")
     st.info(p['Rekomendasi'])
